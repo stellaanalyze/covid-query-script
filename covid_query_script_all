@@ -1,0 +1,62 @@
+--looking AT total cases vs total deaths --show Covid-caused death percentage IN your country --
+--SELECT
+  --location,
+  --date,
+  --total_cases,
+  --total_deaths,
+  --(total_deaths/total_cases)*100 AS death_by_covid --
+--FROM
+  --`calm-catfish-336118.covidprofolio.CovidDeaths` --
+--WHERE
+  --location = 'United States' --
+--ORDER BY
+  --1,
+  --2
+
+--Looking at total populations vs total cases
+--shows the percentages of population had covid
+--SELECT
+  --location,
+  --date,
+  --total_cases,
+  --population,
+  --(total_cases/population)*100 AS covid_in_population 
+--FROM
+  --`calm-catfish-336118.covidprofolio.CovidDeaths`
+--WHERE
+  --location = 'United States'
+--ORDER BY
+  --1,
+  --2
+
+--Looking at countries with the highest infection rate 
+--SELECT 
+--location, date, population, MAX(total_cases) as highest_infection_count,max((total_cases/population))*100 as highest_death_by_covid
+--FROM `calm-catfish-336118.covidprofolio.CovidDeaths` 
+--group by location,date,population
+--order by highest_death_by_covid desc 
+
+--countries total death tolls 
+--select continent, max((total_deaths)) as deathtoll
+--from `calm-catfish-336118.covidprofolio.CovidDeaths` 
+--where continent is not null 
+--group by continent
+--order by deathtoll desc 
+
+--join tables to find out the world vaccination population 
+
+--SELECT
+--column_name,
+--COUNT(table_name)
+--FROM
+--`calm-catfish-336118.covidprofolio.INFORMATION_SCHEMA.COLUMNS`
+--GROUP BY
+--1;
+
+
+select dea.continent,dea.location,dea.date,dea.population,vac.new_vaccinations, sum(vac.new_vaccinations) over (partition by dea.location order by dea.location,dea.date) as Rollingpeoplevac
+from `calm-catfish-336118.covidprofolio.CovidDeaths`  dea
+join `calm-catfish-336118.covidprofolio.CovidVaccinations`  vac
+on dea.continent = vac.continent and dea.date = vac.date
+where dea.continent is not null and vac.new_vaccinations is not null 
+order by 2,3
